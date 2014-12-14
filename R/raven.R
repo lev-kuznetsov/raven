@@ -150,7 +150,9 @@
         if (!file.exists (base)) dir.create (base, recursive = TRUE, showWarnings = FALSE);
         if (!(file.exists (file.path (base, archive)) && file.exists (file.path (base, 'raven.R'))))
           for (root in remote) tryCatch ((function (...) for (file in c (...)) {
-            debug ("Downloading", from <- paste (root, name, version, file, sep = '/'), "to", to <- file.path (base, file));
+            to <- file.path (base, file);
+            from <- paste (root, name, version, file, sep = '/');
+            debug ("Downloading", from, "to", to);
             download.file (from, to, 'curl');
           }) ('raven.R', archive));
         if (file.exists (file.path (base, archive)) && file.exists (file.path (base, 'raven.R')))
