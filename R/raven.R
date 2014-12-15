@@ -84,12 +84,33 @@
                             .source (script, execution);
                           'ok';
                         }, finally = setwd (save)),
-                        on.test = function (name, version, base, execution, .scripts, .source) if (!is.null (tests)) tryCatch ({
+                        on.test = function (name, version, base, execution, .scripts, .source, info) if (!is.null (tests)) tryCatch ({
                           save <- getwd ();
                           setwd (base);
+                          success <- 0;
+                          failures <- 0;
+                          report <- '';
+                          spaces <- 0;
+                          indent <- function (string) sprintf (paste ('%', nchar (string) + spaces, 's', sep = ''), string);
+                          execution <- list2env (list (suite = function (suite, callback) {
+                                                         report <<- paste (report, indent (suite), sep = '\n');
+                                                         spaces <<- spaces + 2;
+                                                         callback ();
+                                                         spaces <<- spaces - 2;
+                                                       },
+                                                       it = function (component, callback) {
+                                                         report <<- paste (report, indent (component), sep = '\n');
+                                                         spaces <<- spaces + 2;
+                                                         callback ();
+                                                         spaces <<- spaces - 2;
+                                                       },
+                                                       expect = function (assertion)
+                                                         if (!assertion) failures <<- failures + 1 else success <<- success + 1),
+                                                 parent = execution);
                           for (script in .scripts (tests, list.files (path = tests, pattern = '*\\.R$', recursive = TRUE)))
                             .source (script, execution);
-                          'ok';
+                          info (report, '\nResults:', success + failures, 'specs,', failures, 'failures');
+                          if (failures > 0) stop ("Assertion failures") else 'ok';
                         }, finally = setwd (save)),
                         on.install = function (name, version, base, local, .scripts, binder) if (!is.null (tests)) tryCatch ({
                           save <- getwd ();
