@@ -43,8 +43,6 @@
   inspect <<- function () function (binder, base, goals, debug) {
     debug ("Inspecting", base)
 
-    if (!exists ('local', e = binder))
-      define ('local', function () path.expand (file.path ('~', '.raven', 'repository')), eager, binder);
     define ('build', function () file.path (base, 'target'), eager, binder);
     define ('sources', function () base, eager, binder);
   
@@ -57,9 +55,10 @@
                   for (name in ls (packaging, all.names = TRUE)) (function (key) define (key, packaging[[ key ]], b = binder)) (name);
                 },
                 modules = function (...)
-                  list (on.inspect = function (goals, base, binder, log) {
+                  list (on.inspect = function (goals, base, binder, log, local) {
                           for (module in c (...))
-                            raven (goals, base = file.path (base, module), parent = binder, restore.libPaths = FALSE, log = log);
+                            raven (goals, base = file.path (base, module), parent = binder,
+                                   restore.libPaths = FALSE, log = log, local = local);
                           'ok';
                         }),
                 script = function (sources = '.', tests = NULL)
@@ -144,8 +143,7 @@
               remote = function (url) remote (function () url),
               build = function (path) define ('build', function () path, eager, binder),
               dependency = function (name, version, required = TRUE)
-                dependency (function () list (name = name, version = version, required = required)),
-              local = function (path) define ('local', function () path, b = binder)),
+                dependency (function () list (name = name, version = version, required = required))),
           source (file.path (base, 'raven.R'), local = TRUE));
 
     inject (function (info, debug, base, remote, dependencies, local, name, version) {
@@ -178,7 +176,7 @@
           }) ('raven.R', archive));
         if (file.exists (file.path (base, archive)) && file.exists (file.path (base, 'raven.R')))
           raven (inspect (), fetch (force), function (on.fetch = 'ok') on.fetch,
-                 base = base, restore.libPaths = FALSE, log = log)
+                 base = base, restore.libPaths = FALSE, log = log, local = local)
         else if (required) stop (paste ("Unable to fetch required dependency", paste (name, version, sep = ':'), '\n'));
       }) (dependency$name, dependency$version, dependency$required);
     debug ("Finished fetching dependencies for", paste (name, version, sep = ':'))
@@ -191,7 +189,7 @@
       (function (name, version, required)
         tryCatch (raven (inspect (), import (execution),
                          base = file.path (local, name, version), restore.libPaths = FALSE,
-                         log = log))) (dependency$name, dependency$version, dependency$required);
+                         log = log, local = local))) (dependency$name, dependency$version, dependency$required);
     inject (function (on.import = 'ok') on.import, binder, TRUE);
   };
   
@@ -216,7 +214,9 @@
     inject (function (on.test = 'not applicable') on.test, binder, TRUE);
   };
   
-  raven <<- function (..., base = getwd (), parent = binder (), restore.libPaths = FALSE, log = 'info')
+  raven <<- function (...,
+                      base = getwd (), parent = binder (), restore.libPaths = FALSE, log = 'info',
+                      local = path.expand (file.path ('~', '.raven', 'repository')))
     binder (parent = parent, callback = function (binder) tryCatch ({
       save <- .libPaths ();
 
@@ -238,6 +238,7 @@
       define ('base', function () base, eager, binder);
       define ('binder', function () binder, eager, binder);
       define ('log', function () log, eager, binder);
+      define ('local', function () local, eager, binder);
       goals <- c (...);
       inject (function (execution = parent.frame (1))
                           if (length (goals) < 1)
