@@ -111,7 +111,7 @@
                           info (report, '\nResults:', success + failures, 'specs,', failures, 'failures');
                           if (failures > 0) stop ("Assertion failures") else 'ok';
                         }, finally = setwd (save)),
-                        on.install = function (name, version, base, local, .scripts, binder) if (!is.null (tests)) tryCatch ({
+                        on.install = function (name, version, base, local, .scripts, binder) if (!is.null (sources)) tryCatch ({
                           save <- getwd ();
                           setwd (base);
                           dir.create (file.path (local, name, version), recursive = TRUE, showWarnings = FALSE);
