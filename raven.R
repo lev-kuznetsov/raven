@@ -1,1 +1,1 @@
-project ('raven', '0.0.1-SNAPSHOT', script (sources = file.path ("R")));
+project ('raven', '0.0.0.9002', cran ());
