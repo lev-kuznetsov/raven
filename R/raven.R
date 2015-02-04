@@ -39,7 +39,7 @@ inject <- function (callback, binder = .binder, local = FALSE) {
 
 clean <- function () function (build) unlink (build, recursive = TRUE);
   
-inspect <- function () function (binder, base, goals, debug) {
+inspect <- function () function (binder, base, debug) {
   debug ("Inspecting", base)
 
   define ('build', function () file.path (base, 'target'), eager, binder);
@@ -97,13 +97,18 @@ inspect <- function () function (binder, base, goals, debug) {
                                                        spaces <<- spaces - 2;
                                                      },
                                                      it = function (component, callback) {
-                                                       report <<- paste (report, indent (component), sep = '\n');
                                                        spaces <<- spaces + 2;
+                                                       before <- failures;
                                                        callback ();
+                                                       report <<- paste (report,
+                                                                         indent (paste (component,
+                                                                                        if (failures == before) '✔' else '✘')),
+                                                                         sep = '\n');
                                                        spaces <<- spaces - 2;
                                                      },
-                                                     expect = function (assertion)
-                                                       if (!assertion) failures <<- failures + 1 else success <<- success + 1),
+                                                     expect = function (assertion) {
+                                                       if (!assertion) failures <<- failures + 1 else success <<- success + 1;
+                                                     }),
                                                parent = execution);
                         for (script in .scripts (tests, list.files (path = tests, pattern = '*\\.R$', recursive = TRUE)))
                           .source (script, execution);
@@ -154,7 +159,7 @@ inspect <- function () function (binder, base, goals, debug) {
                                             collapse = ', '));
   }, binder);
 
-  inject (function (on.inspect = 'ok') on.inspect, binder, TRUE);
+  inject (function (on.inspect = 'ok') on.inspect, binder = binder, local = TRUE);
 };
 
 fetch <- function (force = FALSE) function (name, version, local, remote, dependencies, binder, info, debug) {
