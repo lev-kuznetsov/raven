@@ -1,5 +1,6 @@
 # Eclipse
 .project
+.settings
 
 # History files
 .Rhistory
