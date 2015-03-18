@@ -21,6 +21,17 @@ be rid of the warning. The packages will be installed in a structure
 under ```~/.raven``` by default, can be tweaked with the ```local```
 parameter to ```provide``` or setting the ```raven.local``` option
 
+The ```provide``` function sets up the library paths and if the
+optional ```code``` parameter is supplied will resturn the result of
+its evaluation, if not will invisibly return the library paths. The
+call itself does not alter library paths directly, so if you would
+like to set up package versions for the console a useful idiom is
+to set library paths to the result of ```provide``` call:
+
+```
+.libPaths (raven::provide (jsonlite = '0.9.14'));
+```
+
 To submit your own package for the repository add a push webhook to
 ```http://raven-repository.appspot.com/registry/github``` to your
 githubrepository. The package must have a DESCRIPTION file and its
