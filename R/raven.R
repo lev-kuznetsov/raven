@@ -86,8 +86,8 @@ provide <- function (..., code = invisible (.libPaths ()), local = getOption ('r
                                                                                                                   args = if (is.null (info$user)) ''
                                                                                                                          else paste ('--username', info$user,
                                                                                                                                      '--password', info$pw)),
-                                                                                    .Github = devtools::install_github (repository = info$repo,
-                                                                                                              ref = info$sha));
+                                                                                    .Github = devtools::install_github (repo = info$repo,
+                                                                                                                        ref = info$sha));
                                                                           paths;
                                                                         }, error = function (e) {
                                                                           unlink (path, recursive = TRUE);
