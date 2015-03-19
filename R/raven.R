@@ -48,10 +48,7 @@ NULL;
 #' @param repo the repository address, if omitted uses the option 
 #' 'raven.repo'
 #' @return return of the code evaluated within the environment
-#' @export 
-#' @examples
-#' provide (NMF = '0.20.5', code = print (.libPaths ()));
-#' provide (NMF =, code = print (.libPaths ());
+#' @export
 provide <- function (..., code = invisible (.libPaths ()), local = getOption ('raven.local'), repo = getOption ('raven.repo')) {
   packages <- match.call (expand.dots = FALSE)$...;
   devtools::with_libpaths (unique (unlist (sapply (names (packages),
