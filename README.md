@@ -9,6 +9,9 @@ install.packages('devtools');
 devtools::install_github('lev-kuznetsov/devtools');
 devtools::install_github('dfci-cccb/raven');
 ```
+
+Makes use of the [raven-repository](https://github.com/dfci-cccb/raven-repository) meta repo
+
 =====
 
 Currently supports most of cran and bioconductor packages, the exported
