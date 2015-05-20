@@ -5,7 +5,7 @@ Title: R versioned package manager
 Author: Lev Kuznetsov
 Maintainer: Lev Kuznetsov <levk@jimmy.harvard.edu>
 Depends: R (>= 3.1.0)
-Imports: jsonlite, devtools
+Imports: jsonlite, devtools (>= 1.8.0)
 Suggests: testthat
 Description: R versioned package manager
 License: LGPL (>= 3)
